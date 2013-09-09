@@ -47,11 +47,28 @@ class Handler(webapp2.RequestHandler):
         except:
             return None, False
 
+    def logged_in(self):
+        user = facebook.get_user_from_cookie(self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
+        if user:
+            graph = facebook.GraphAPI(user["access_token"])
+            return True, graph
+        else:
+            return False, None
+
 
 class SignupHandler(Handler):
 
     def render_signup(self, first_name="", login_err="", input_err="", email="", last_name="", gender="", occupation=""):
-        self.render("get_started.html",
+		loggedin, graph = self.logged_in()
+		if loggedin:
+			profile = graph.get_object("me")
+			user_name = profile["name"]
+			profile_pic = graph.fql("SELECT url FROM profile_pic WHERE id=%s AND width=%i AND height=%i" % (profile["id"], 40, 40))
+			prof_pic = profile_pic["data"][0]["url"]
+		else:
+			user_name=None
+			prof_pic=None
+		self.render("get_started.html",
 					first_name=first_name,
 					login_err=login_err,
 					input_err=input_err,
@@ -59,7 +76,10 @@ class SignupHandler(Handler):
 					last_name=last_name,
 					gender=gender,
 					occupation=occupation,
-					FB_APP_ID=FACEBOOK_APP_ID)
+					FB_APP_ID=FACEBOOK_APP_ID,
+					logged_in=loggedin,
+					user_name=user_name,
+					profile_pic=prof_pic)
 
 
     def get(self):

@@ -43,7 +43,7 @@
 
 	            FB.api('/me', function(response) {
 	                user_email = response.email; //get user email
-					window.location = '/use_facebook'
+					window.location = '/get_started'
 	          // you can store this data into your database             
 	            });
 
@@ -99,6 +99,12 @@
               <a href="#contact">Contact</a>
             </li>
           </ul>
+		{% if logged_in %}
+			<ul class="nav navbar-nav navbar-right">
+				<li>{{user_name}}</li>
+				<li><img src="{{profile_pic}}"></img></li>
+			</ul>
+		{% else %}
           <form class="navbar-form navbar-right" method="post">
             <div class="form-group">
               <input type="email" placeholder="Email" class="form-control" name="login_email">
@@ -110,6 +116,7 @@
               Log in
             </button>
           </form>
+		{% endif %}
         </div>
         <!--/.navbar-collapse -->
       </div>
