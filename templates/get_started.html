@@ -19,6 +19,50 @@
 </head>
   
   <body>
+	<div id="fb-root"></div>
+	<script>
+	  window.fbAsyncInit = function() {
+	    FB.init({
+	        appId   : '{{FB_APP_ID}}',
+	        oauth   : true,
+	        status  : true, // check login status
+	        cookie  : true, // enable cookies to allow the server to access the session
+	        xfbml   : true // parse XFBML
+	    });
+
+	  };
+
+	function fb_login(){
+	    FB.login(function(response) {
+
+	        if (response.authResponse) {
+	            console.log('Welcome!  Fetching your information.... ');
+	            //console.log(response); // dump complete info
+	            access_token = response.authResponse.accessToken; //get access token
+	            user_id = response.authResponse.userID; //get FB UID
+
+	            FB.api('/me', function(response) {
+	                user_email = response.email; //get user email
+					window.location = '/use_facebook'
+	          // you can store this data into your database             
+	            });
+
+	        } else {
+	            //user hit cancel button
+	            console.log('User cancelled login or did not fully authorize.');
+
+	        }
+	    }, {
+	        scope: 'user_about_me,user_birthday,user_location'
+	    });
+	}
+	(function() {
+	    var e = document.createElement('script');
+	    e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+	    e.async = true;
+	    document.getElementById('fb-root').appendChild(e);
+	}());
+	</script>
     <div class="navbar navbar-fixed-top navbar-inverse">
       <div class="container">
         <div class="navbar-header">
@@ -38,24 +82,13 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sesh is for&nbsp;<b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#">People who work out</a>
+                  <a href="#">Athletes</a>
                 </li>
                 <li>
                   <a href="#">Coaches</a>
                 </li>
                 <li>
                   <a href="#">Gyms</a>
-                </li>
-                <li class="divider">
-                </li>
-                <li class="dropdown-header">
-                  Nav header
-                </li>
-                <li>
-                  <a href="#">Separated link</a>
-                </li>
-                <li>
-                  <a href="#">One more separated link</a>
                 </li>
               </ul>
             </li>
@@ -91,7 +124,7 @@
         <p>
         </p>
         <div>
-          Sesh is free to register with so why not jump on the bandwagon straightaway?
+          Register for Sesh for free.
         </div>
         <p>
         </p>
@@ -104,9 +137,9 @@
         <div class="row">
           <div class="col-md-4">
 			<h2> Be social! </h2>
-			<form action="/use_facebook" method="post">
-			<button class="btn btn-facebook"><i class="icon-facebook"></i> | Connect with Facebook</button>
-			</form>
+			<!--form action="/use_facebook" method="post"-->
+			<button class="btn btn-facebook" onclick="fb_login();"><i class="icon-facebook"></i> | Connect with Facebook</button>
+			<!--/form-->
 			<br>
 			<br>
 			<button class="btn btn-google-plus"><i class="icon-google-plus"></i> | Connect with Google Plus</button>

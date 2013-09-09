@@ -11,9 +11,11 @@ import cgi
 import logging
 import datetime
 from settings import FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_SECRET
+import facebook
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape=False)
+fblogin = "https://graph.facebook.com/oauth/authorize?client_id="+FACEBOOK_APP_ID+"&redirect_uri=http://sesh-test.appspot.com/use_facebook&state="+FACEBOOK_SECRET+"&scope=user_about_me,user_birthday,user_location"
 
 class Handler(webapp2.RequestHandler):
 
@@ -56,7 +58,8 @@ class SignupHandler(Handler):
 					email=email,
 					last_name=last_name,
 					gender=gender,
-					occupation=occupation)
+					occupation=occupation,
+					FB_APP_ID=FACEBOOK_APP_ID)
 
 
     def get(self):
@@ -149,16 +152,13 @@ class HelloHandler(Handler):
 			self.redirect('/get_started')
 
 class FacebookHandler(Handler):
-	
-	def post(self):
-		self.redirect("https://www.facebook.com/dialog/oauth?client_id="+
-					  FACEBOOK_APP_ID+
-					  "&redirect_uri=http://sesh-test.appspot.com/use_facebook&state="+
-					  FACEBOOK_SECRET+
-					  "&scope=user_about_me,user_birthday,user_location")
 					
 	def get(self):
-		print self.request
-		if self.request.get('state') == FACEBOOK_SECRET:
-			self.response.out.write("YAY")
-		
+		user = facebook.get_user_from_cookie(self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
+		if user:
+			graph = facebook.GraphAPI(user["access_token"])
+			profile = graph.get_object("me")
+			friends = graph.get_connections("me", "friends")
+			self.response.out.write("YAY<br>Welcome, %s!" % profile["name"])
+		else:
+			self.response.out.write("nay :(")
