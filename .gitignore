@@ -1,0 +1,4 @@
+settings.py
+favicon.ico
+templates/base.html
+*.pyc
