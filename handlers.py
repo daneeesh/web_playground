@@ -159,6 +159,8 @@ class FacebookHandler(Handler):
 			graph = facebook.GraphAPI(user["access_token"])
 			profile = graph.get_object("me")
 			friends = graph.get_connections("me", "friends")
-			self.response.out.write("YAY<br>Welcome, %s!" % profile["name"])
+			profile_pic = graph.fql("SELECT url FROM profile_pic WHERE id=%s AND width=%i AND height=%i" % (profile["id"], 40, 40))
+			print profile_pic
+			self.response.out.write("YAY<br>Welcome, %s!<br><img src=\"%s\"></img>" % (profile["name"], profile_pic["data"][0]["url"]))
 		else:
 			self.response.out.write("nay :(")
