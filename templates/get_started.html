@@ -62,6 +62,37 @@
 	    e.async = true;
 	    document.getElementById('fb-root').appendChild(e);
 	}());
+	(function() {
+	    var po = document.createElement('script');
+	    po.type = 'text/javascript'; po.async = true;
+	    po.src = 'https://apis.google.com/js/client:plusone.js?onload=render';
+	    var s = document.getElementsByTagName('script')[0];
+	    s.parentNode.insertBefore(po, s);
+	  })();
+
+	  function render() {
+	    gapi.signin.render('customBtn', {
+	      'callback': 'signinCallback',
+	      'clientid': '1078505100480-ed4vso9nu6l0d001np1ce7g61gdbqnki.apps.googleusercontent.com',
+	      'cookiepolicy': 'http://sesh-test.appspot.com',
+	      'requestvisibleactions': 'http://schemas.google.com/AddActivity',
+	      'scope': 'https://www.googleapis.com/auth/plus.login'
+	    });
+	  }
+	function signinCallback(authResult) {
+	  if (authResult['access_token']) {
+	    // Successfully authorized
+	    // Hide the sign-in button now that the user is authorized, for example:
+	    window.location='/g_plus'
+	    // document.getElementById('customBtn').setAttribute('style', 'display: none');
+	  } else if (authResult['error']) {
+	    // There was an error.
+	    // Possible error codes:
+	    //   "access_denied" - User denied access to your app
+	    //   "immediate_failed" - Could not automatically log in the user
+	    console.log('There was an error: ' + authResult['error']);
+	  }
+	}
 	</script>
     <div class="navbar navbar-fixed-top navbar-inverse">
       <div class="container">
@@ -131,7 +162,7 @@
         <p>
         </p>
         <div>
-          Register for Sesh for free.
+          Sesh is free.
         </div>
         <p>
         </p>
@@ -149,7 +180,11 @@
 			<!--/form-->
 			<br>
 			<br>
-			<button class="btn btn-google-plus"><i class="icon-google-plus"></i> | Connect with Google Plus</button>
+			<div id="gSignInWrapper">
+				<div id="customBtn" class="customGPlusSignIn">
+					<button class="btn btn-google-plus"><i class="icon-google-plus"></i> | Connect with Google Plus</button>
+				</div>
+			</div>
           </div>
 		<form method="post">
           <div class="col-md-4">
@@ -192,7 +227,7 @@
               </label>
               <input type="date" class="form-control" id="dob" name="dob">
             </div>
-            <div class="form-group">
+            <!--div class="form-group">
               <label>
                 I am a
               </label>
@@ -204,7 +239,7 @@
                   Guy
                 </option>
               </select>
-            </div>
+            </div-->
             <div class="form-group">
               <label>
                 I am primarily a

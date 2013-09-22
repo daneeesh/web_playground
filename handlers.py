@@ -48,11 +48,14 @@ class Handler(webapp2.RequestHandler):
             return None, False
 
     def logged_in(self):
-        user = facebook.get_user_from_cookie(self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
-        if user:
-            graph = facebook.GraphAPI(user["access_token"])
-            return True, graph
-        else:
+        try:
+            user = facebook.get_user_from_cookie(self.request.cookies, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
+            if user:
+                graph = facebook.GraphAPI(user["access_token"])
+                return True, graph
+            else:
+                return False, None
+        except:
             return False, None
 
 
@@ -184,3 +187,8 @@ class FacebookHandler(Handler):
 			self.response.out.write("YAY<br>Welcome, %s!<br><img src=\"%s\"></img>" % (profile["name"], profile_pic["data"][0]["url"]))
 		else:
 			self.response.out.write("nay :(")
+			
+class GooglePlusHandler(Handler):
+	
+	def get(self):
+		self.response.out.write("YAY!")
